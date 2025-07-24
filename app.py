@@ -80,18 +80,63 @@ def create_recipe():
         db.session.rollback()
         return jsonify({'message': 'Erro ao criar receita', 'error': str(e)}), 500
 
+# Rota para LISTAR todas as receitas
+@app.route('/api/recipes', methods=['GET'])
+def get_recipes():
+    try:
+        # Busca todas as receitas no banco de dados
+        recipes = Recipe.query.all()
+        # Converte cada objeto receita para JSON usando o nosso método to_json()
+        # e retorna a lista
+        return jsonify([recipe.to_json() for recipe in recipes]), 200
+    except Exception as e:
+        return jsonify({'message': 'Erro ao buscar receitas', 'error': str(e)}), 500
 
-    # Rota para LISTAR todas as receitas
-    @app.route('/api/recipes', methods=['GET'])
-    def get_recipes():
+# Rota para BUSCAR UMA receita específica
+@app.route('/api/recipes/<int:recipe_id>', methods=['GET'])
+def get_recipe_detail(recipe_id):
+    try:
+        # .get_or_404() é um atalho útil: tenta encontrar o registo pelo id.
+        # Se não encontrar, retorna automaticamente um erro 404 Not Found.
+        recipe = Recipe.query.get_or_404(recipe_id)
+        return jsonify(recipe.to_json()), 200
+    except Exception as e:
+        return jsonify({'message': 'Erro ao buscar receita', 'error': str(e)}), 500
+
+# Rota para ATUALIZAR uma receita existente
+@app.route('/api/recipes/<int:recipe_id>', methods=['PUT'])
+def update_recipe(recipe_id):
         try:
-            # Busca todas as receitas no banco de dados
-            recipes = Recipe.query.all()
-            # Converte cada objeto receita para JSON usando o nosso método to_json()
-            # e retorna a lista
-            return jsonify([recipe.to_json() for recipe in recipes]), 200
+            recipe = Recipe.query.get_or_404(recipe_id)
+            data = request.get_json()
+
+            # Atualiza os campos da receita com os novos dados,
+            # mantendo os dados antigos se os novos não forem fornecidos.
+            recipe.name = data.get('name', recipe.name)
+            recipe.instructions = data.get('instructions', recipe.instructions)
+
+            # Confirma a alteração no banco de dados
+            db.session.commit()
+
+            return jsonify(recipe.to_json()), 200
         except Exception as e:
-            return jsonify({'message': 'Erro ao buscar receitas', 'error': str(e)}), 500
+            db.session.rollback()
+            return jsonify({'message': 'Erro ao atualizar receita', 'error': str(e)}), 500
+
+# Rota para DELETAR uma receita
+@app.route('/api/recipes/<int:recipe_id>', methods=['DELETE'])
+def delete_recipe(recipe_id):
+    try:
+        recipe = Recipe.query.get_or_404(recipe_id)
+
+        # Remove o registo do banco de dados
+        db.session.delete(recipe)
+        db.session.commit()
+
+        return jsonify({'message': 'Receita deletada com sucesso'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Erro ao deletar receita', 'error': str(e)}), 500
 
 # Bloco para executar o servidor de desenvolvimento
 # Esta verificação garante que o servidor só roda quando o script é executado diretamente
