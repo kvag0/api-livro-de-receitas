@@ -1,0 +1,30 @@
+#version: '3.8'
+
+services:
+  # Serviço da nossa API Python/Flask
+  api-python:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      # A URL do banco de dados agora aponta para o serviço 'db-postgres'
+      # As credenciais devem ser as mesmas definidas no serviço do banco de dados abaixo
+      DATABASE_URL: postgresql://postgres:mysecretpassword@db-postgres:5432/recipe_book_db
+    depends_on:
+      - db-postgres
+
+  # Serviço do nosso banco de dados PostgreSQL
+  db-postgres:
+    image: postgres:14-alpine # Usamos uma imagem oficial e leve do Postgres
+    environment:
+      # A imagem oficial do Postgres usa estas variáveis para inicializar o banco na primeira vez
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: recipe_book_db
+    ports:
+      - "5432:5432" # Mapeamos a porta para podermos aceder externamente se necessário
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

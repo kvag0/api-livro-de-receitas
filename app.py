@@ -142,4 +142,4 @@ def delete_recipe(recipe_id):
 # Esta verificação garante que o servidor só roda quando o script é executado diretamente
 if __name__ == '__main__':
     # app.run() inicia o servidor. O modo debug reinicia-o a cada alteração.
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', debug=True, port=5000)
