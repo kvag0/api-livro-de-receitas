@@ -50,6 +50,16 @@ class Ingredient(db.Model):
             'name': self.name
         }
 
+# Rota de teste
+@app.route('/api', methods=['GET'])
+def hello_world():
+    # A função jsonify cria uma resposta JSON...
+    return jsonify({
+        'message': 'API de Livro de Receitas V2 - Deploy automático em ação!',
+        'status': 'ok',
+        'timestamp': '25 de Julho de 2025, 10:16' # Adicionando um timestamp para ver a mudança
+        })
+        
 # Criar uma rota de teste usando um "decorator"
 @app.route('/api/recipes', methods=['POST'])
 def create_recipe():
