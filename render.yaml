@@ -1,17 +1,26 @@
-# A estrutura correta do render.yaml
+version: "1"
 
+# 1. Definição do banco de dados no seu próprio bloco.
 databases:
-  - name: db-receitas         # Um nome para o nosso recurso de banco de dados
-    databaseName: recipe_book_db  # O nome da base de dados interna a ser criada
-    user: app_user          # O nome do utilizador a ser criado
-    plan: free              # O plano gratuito
+  - name: db-receitas
+    plan: free
+    # O Render usa 'postgres' como o tipo padrão para databases no plano free,
+    # então não precisamos de especificar.
+    # Adicionamos estes para consistência com o que a nossa app espera.
+    databaseName: recipe_book_db
+    user: app_user
 
+# 2. Definição dos nossos serviços (a API).
 services:
   - type: web
     name: api-livro-de-receitas
     plan: free
     env: docker
-    database: db-receitas
+    # As variáveis de ambiente são a forma correta de conectar.
     envVars:
+      - key: DATABASE_URL            # A variável que a nossa aplicação espera.
+        fromDatabase:
+          name: db-receitas          # O nome do banco de dados definido acima.
+          property: connectionString   # Pega a URL de conexão completa gerada pelo Render.
       - key: PYTHONUNBUFFERED
         value: 1
