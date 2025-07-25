@@ -15,6 +15,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Inicializa o SQLAlchemy com a nossa aplicação Flask
 db = SQLAlchemy(app)
 
+# Este código cria as tabelas do banco de dados, se elas ainda não existirem,
+# sempre que a aplicação é iniciada.
+with app.app_context():
+    db.create_all()
+
 # Definição do Modelo de Dados para Receita (Recipe)
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
