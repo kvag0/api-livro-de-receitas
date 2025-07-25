@@ -1,26 +1,18 @@
-# Define a versão do blueprint do Render
 version: "1"
 
-# Lista de serviços que o Render irá criar para nós
 services:
-  # 1. Definição do nosso serviço de Banco de Dados PostgreSQL
-  - type: postgres # <-- CORREÇÃO AQUI
-    name: db-receitas   # Um nome para o nosso banco de dados no Render
-    plan: free        # Importante: Usa o plano gratuito do Render
+  - type: psql
+    name: db-receitas
+    plan: free
 
-  # 2. Definição do nosso serviço Web (a nossa API Python)
   - type: web
     name: api-livro-de-receitas
-    plan: free        # Usa o plano gratuito para o serviço web
-    env: docker       # Diz ao Render para construir a nossa app a partir do nosso Dockerfile
-    # Define as variáveis de ambiente para a nossa aplicação
+    plan: free
+    env: docker
     envVars:
-      # Esta é a parte mágica. Estamos a criar a variável DATABASE_URL...
       - key: DATABASE_URL
-        # ...e o seu valor virá do serviço de banco de dados que definimos acima.
         fromDatabase:
-          name: db-receitas # O nome do serviço de banco de dados
-          property: connectionString # A propriedade que queremos (a URL de conexão completa)
-      # Boa prática para aplicações Python em produção
+          name: db-receitas
+          property: connectionString
       - key: PYTHONUNBUFFERED
         value: 1
