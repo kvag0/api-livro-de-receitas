@@ -4,7 +4,7 @@ version: "1"
 # Lista de serviços que o Render irá criar para nós
 services:
   # 1. Definição do nosso serviço de Banco de Dados PostgreSQL
-  - type: psql        # 'psql' é o tipo para banco de dados PostgreSQL
+  - type: postgres # <-- CORREÇÃO AQUI
     name: db-receitas   # Um nome para o nosso banco de dados no Render
     plan: free        # Importante: Usa o plano gratuito do Render
 
